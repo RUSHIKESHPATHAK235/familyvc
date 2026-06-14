@@ -153,36 +153,76 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .quality-poor .signal-bars i { background: var(--danger); }
 .header-button { min-width: 44px; height: 35px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface-soft); cursor: pointer; }
 .header-button b { font-size: 11px; }
-/* 1. Constrain the stage so it strictly bounds the grid */
+
+/* 1. Constrain the stage to the screen size */
 .call-stage { 
   position: relative; 
-  height: 100%;       /* Added: Forces the stage to respect the screen size */
-  width: 100%;        /* Added: Prevents horizontal overflow */
+  height: 100%;       
+  width: 100%;        
   min-height: 0; 
-  display: flex;      /* Changed from grid to flex for better bounding */
+  display: flex;      
   align-items: center; 
   justify-content: center;
   padding-bottom: 12px; 
-  overflow: hidden;   /* Added: Traps any runaway elements */
+  overflow: hidden;   
 }
 
-/* 2. Force the grid to fill the constrained stage */
+/* 2. Force the grid to fill the stage */
 .video-grid { 
   width: 100%; 
-  height: 100%;       /* Added: Makes the grid fill the stage */
-  max-height: 100%;   /* Added: Absolute cap on height */
+  height: 100%;       
+  max-height: 100%;   
   display: grid; 
   gap: 10px; 
   transition: grid-template .35s ease; 
 }
 
-/* (Leave your existing .video-tile and video CSS as they are, 
-   object-fit: cover is already doing its job perfectly!) */
 .video-grid[data-count="1"] { grid-template-columns: 1fr; }
-.video-grid[data-count="2"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
+
+/* 3. WHATSAPP PIP LAYOUT (For 2 People) */
+.video-grid[data-count="2"] { 
+  display: block; 
+  position: relative; 
+  width: 100%;
+  height: 100%;
+}
+
+/* Make the remote family member take up the entire screen */
+.video-grid[data-count="2"] .video-tile:not(.local) {
+  position: absolute; 
+  inset: 0; 
+  width: 100%; 
+  height: 100%; 
+  z-index: 1; 
+  border-radius: 20px;
+}
+
+/* Make YOUR camera a small floating box (Picture-in-Picture) */
+.video-grid[data-count="2"] .video-tile.local {
+  position: absolute; 
+  width: clamp(110px, 25vw, 240px); 
+  aspect-ratio: 3 / 4; 
+  height: auto;
+  top: 15px;       
+  right: 15px; 
+  z-index: 10; 
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.15);
+  box-shadow: 0 14px 35px rgba(0,0,0,0.5);
+}
+
+/* Hide the text/icons on your small floating camera to keep the UI clean */
+.video-grid[data-count="2"] .video-tile.local .tile-overlay,
+.video-grid[data-count="2"] .video-tile.local .tile-top,
+.video-grid[data-count="2"] .video-tile.local .tile-empty p {
+  display: none !important; 
+}
+
+/* 4. GRID LAYOUT (For 3 or 4 People) */
 .video-grid[data-count="3"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
 .video-grid[data-count="3"] .video-tile:first-child { grid-row: 1 / 3; }
 .video-grid[data-count="4"] { grid-template-columns: repeat(2, minmax(0,1fr)); grid-template-rows: repeat(2,minmax(0,1fr)); }
+
 .video-tile { position: relative; min-width: 0; min-height: 0; overflow: hidden; border: 1px solid var(--border); border-radius: 20px; background: #101426; box-shadow: 0 16px 55px rgba(0,0,0,.2); transition: border-color .25s, box-shadow .25s; }
 .video-tile.speaking { border-color: rgba(80,214,154,.75); box-shadow: 0 0 0 2px rgba(80,214,154,.12), 0 16px 55px rgba(0,0,0,.25); }
 .video-tile video { width: 100%; height: 100%; object-fit: cover; background: #101426; }
@@ -332,7 +372,6 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
   .brand.compact span { display: none; }.room-meta { position: static; transform: none; }.meta-divider, #latencyDisplay { display: none; }
   .network-badge > span:last-child { display: none; }.network-badge { padding: 7px 8px; }
   .call-stage { padding-bottom: 5px; }.video-grid { gap: 6px; }
-  .video-grid[data-count="2"] { grid-template-columns: 1fr; grid-template-rows: repeat(2,minmax(0,1fr)); }
   .video-grid[data-count="3"] .video-tile:first-child { grid-column: 1 / 3; grid-row: auto; }
   .video-tile { border-radius: 15px; }.tile-overlay { padding: 30px 10px 9px; }.participant-info strong { font-size: 11px; }.participant-info small, .tile-quality span { display: none; }
   .tile-top { top: 8px; right: 8px; }
@@ -351,9 +390,4 @@ body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after 
   .welcome-copy { text-align: left; }.eyebrow { margin-bottom: 15px; }.feature-row { justify-content: flex-start; overflow-x: auto; }
   .feature-row strong { font-size: 11px; }.join-card { border-radius: 22px; }.preview-wrap { height: 190px; }
   .control-button { width: 53px; }.control-button > span { font-size: 16px; }
-}
-@media (orientation: landscape) and (max-height: 620px) and (max-width: 960px) {
-  .call-view { grid-template-rows: 48px 1fr auto; }.call-header { height: 48px; }
-  .control-dock-wrap { padding: 3px 0 calc(4px + var(--safe-bottom)); }.control-dock { padding: 3px; }.control-button { height: 40px; }.control-button small { display: none; }
-  .video-grid[data-count="2"] { grid-template-columns: repeat(2,minmax(0,1fr)); grid-template-rows: 1fr; }
 }
