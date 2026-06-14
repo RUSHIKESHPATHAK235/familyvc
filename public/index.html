@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080b17">
+  <meta name="description" content="Pathak Family — a private place for your family to call and chat.">
+  <title>Pathak Family</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <span class="orb orb-one"></span>
+    <span class="orb orb-two"></span>
+    <span class="orb orb-three"></span>
+    <span class="noise"></span>
+  </div>
+
+  <div id="loadingScreen" class="loading-screen">
+    <div class="loading-mark">
+      <img src="/assets/logo.svg" alt="">
+      <span></span>
+    </div>
+    <p>Bringing your family closer…</p>
+  </div>
+
+  <main id="welcomeView" class="welcome-view hidden">
+    <nav class="welcome-nav">
+      <a class="brand" href="/" aria-label="Pathak Family home">
+        <img src="/assets/logo.svg" alt="">
+        <span>Family <strong>Connect</strong></span>
+      </a>
+      <div id="serverStatus" class="status-pill">
+        <span class="status-dot"></span>
+        <span>Checking connection</span>
+      </div>
+    </nav>
+
+    <section class="welcome-layout">
+      <div class="welcome-copy">
+        <div class="eyebrow"><span>✦</span> Your private family room</div>
+        <h1>Come together,<br><span>wherever you are.</span></h1>
+        <p>A calm, private space for face-to-face moments, everyday stories, and all the little things that matter.</p>
+        <div class="feature-row">
+          <div><span class="feature-icon">⌁</span><strong>Crystal clear</strong><small>HD video & audio</small></div>
+          <div><span class="feature-icon">◈</span><strong>Family only</strong><small>Token protected</small></div>
+          <div><span class="feature-icon">∞</span><strong>Always here</strong><small>One permanent room</small></div>
+        </div>
+      </div>
+
+      <div class="join-card glass-card">
+        <div class="preview-wrap">
+          <video id="previewVideo" autoplay muted playsinline></video>
+          <div id="previewPlaceholder" class="preview-placeholder">
+            <div class="avatar-preview" id="previewAvatar">FC</div>
+            <p>Camera preview</p>
+          </div>
+          <div class="preview-top">
+            <span id="permissionBadge" class="mini-pill"><i></i> Checking devices</span>
+          </div>
+          <div class="preview-controls">
+            <button id="previewMicButton" class="round-button" type="button" aria-label="Toggle preview microphone">
+              <span data-icon="mic">⌁</span>
+            </button>
+            <button id="previewCameraButton" class="round-button" type="button" aria-label="Toggle preview camera">
+              <span data-icon="camera">▣</span>
+            </button>
+          </div>
+          <div class="volume-track"><span id="previewVolume"></span></div>
+        </div>
+
+        <div class="join-content">
+          <div>
+            <span class="step-label">WELCOME HOME</span>
+            <h2>Join the family room</h2>
+            <p>Enter your details to step inside.</p>
+          </div>
+
+          <form id="joinForm" novalidate>
+            <label for="nameInput">Your name</label>
+            <div class="input-shell">
+              <span>☺</span>
+              <input id="nameInput" name="name" type="text" maxlength="40" autocomplete="name" placeholder="What should we call you?" required>
+            </div>
+            <label for="tokenInput">Family token</label>
+            <div class="input-shell">
+              <span>◇</span>
+              <input id="tokenInput" name="familyToken" type="password" autocomplete="current-password" placeholder="Enter your private token" required>
+              <button id="showTokenButton" type="button" aria-label="Show family token">◉</button>
+            </div>
+            <p id="joinError" class="form-error" role="alert"></p>
+            <button id="joinButton" class="primary-button" type="submit">
+              <span>Join family room</span><b>→</b>
+            </button>
+          </form>
+
+          <button id="quickRejoinButton" class="quick-rejoin hidden" type="button">
+            <span class="quick-avatar" id="quickAvatar">R</span>
+            <span>Continue as <strong id="quickName"></strong></span>
+            <b>→</b>
+          </button>
+
+          <div class="privacy-note"><span>♢</span> End-to-end peer media. Your calls are never recorded.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <main id="callView" class="call-view hidden">
+    <header class="call-header">
+      <a class="brand compact" href="/" aria-label="Pathak Family">
+        <img src="/assets/logo.svg" alt="">
+        <span>Family <strong>Connect</strong></span>
+      </a>
+      <div class="room-meta">
+        <span class="live-pill"><i></i> LIVE</span>
+        <span id="sessionTimer">00:00</span>
+        <span class="meta-divider"></span>
+        <span id="latencyDisplay">— ms</span>
+      </div>
+      <div class="header-actions">
+        <div id="networkBadge" class="network-badge quality-connecting">
+          <span class="signal-bars"><i></i><i></i><i></i></span>
+          <span>Connecting</span>
+        </div>
+        <button id="peopleButton" class="header-button" type="button" aria-label="Open participants">
+          <span>♙</span><b id="participantCount">1</b>
+        </button>
+      </div>
+    </header>
+
+    <section class="call-stage">
+      <div id="videoGrid" class="video-grid" data-count="1"></div>
+      <div id="emptyCallState" class="empty-call-state hidden">
+        <div class="pulse-rings"><span></span><span></span><i>♡</i></div>
+        <h2>Waiting for the family</h2>
+        <p>Share the family token to bring everyone together.</p>
+      </div>
+    </section>
+
+    <aside id="sidePanel" class="side-panel" aria-hidden="true">
+      <div class="panel-header">
+        <div class="panel-tabs">
+          <button class="panel-tab active" data-panel-tab="chat" type="button">Chat <span id="unreadBadge" class="hidden">0</span></button>
+          <button class="panel-tab" data-panel-tab="people" type="button">People</button>
+        </div>
+        <button id="closePanelButton" class="icon-button" type="button" aria-label="Close panel">×</button>
+      </div>
+
+      <section id="chatPanel" class="panel-section">
+        <div id="messageList" class="message-list"></div>
+        <div id="typingIndicator" class="typing-indicator"></div>
+        <form id="chatForm" class="chat-form">
+          <button id="emojiButton" type="button" aria-label="Add emoji">☺</button>
+          <textarea id="chatInput" rows="1" maxlength="1000" placeholder="Message your family…"></textarea>
+          <button class="send-button" type="submit" aria-label="Send message">➤</button>
+          <div id="emojiTray" class="emoji-tray hidden"></div>
+        </form>
+      </section>
+
+      <section id="peoplePanel" class="panel-section hidden">
+        <div class="people-heading"><span>In the room</span><b id="onlineCount">1 online</b></div>
+        <div id="onlineList" class="people-list"></div>
+        <div id="offlineSection" class="offline-section hidden">
+          <div class="people-heading"><span>Offline</span></div>
+          <div id="offlineList" class="people-list"></div>
+        </div>
+      </section>
+    </aside>
+
+    <div id="panelBackdrop" class="panel-backdrop hidden"></div>
+
+    <div class="control-dock-wrap">
+      <div class="control-dock">
+        <button id="micButton" class="control-button" type="button" data-tooltip="Microphone">
+          <span>⌁</span><small>Mic</small>
+        </button>
+        <button id="cameraButton" class="control-button" type="button" data-tooltip="Camera">
+          <span>▣</span><small>Camera</small>
+        </button>
+        <button id="chatButton" class="control-button" type="button" data-tooltip="Chat">
+          <span>▤</span><small>Chat</small><b id="controlUnread" class="control-badge hidden">0</b>
+        </button>
+        <button id="fullscreenButton" class="control-button optional-control" type="button" data-tooltip="Fullscreen">
+          <span>⛶</span><small>Expand</small>
+        </button>
+        <button id="settingsButton" class="control-button optional-control" type="button" data-tooltip="Settings">
+          <span>⚙</span><small>Settings</small>
+        </button>
+        <button id="copyTokenButton" class="control-button optional-control" type="button" data-tooltip="Copy family token">
+          <span>◇</span><small>Invite</small>
+        </button>
+        <button id="leaveButton" class="control-button leave-button" type="button" data-tooltip="Leave call">
+          <span>⌕</span><small>Leave</small>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="settingsDialog" class="settings-dialog">
+    <div class="settings-header">
+      <div><span class="step-label">YOUR SPACE</span><h2>Settings</h2></div>
+      <button id="closeSettingsButton" class="icon-button" type="button" aria-label="Close settings">×</button>
+    </div>
+    <div class="settings-body">
+      <nav class="settings-nav">
+        <button class="settings-tab active" data-settings-tab="devices" type="button">◉ <span>Devices</span></button>
+        <button class="settings-tab" data-settings-tab="appearance" type="button">✦ <span>Appearance</span></button>
+        <button class="settings-tab" data-settings-tab="network" type="button">⌁ <span>Network</span></button>
+      </nav>
+      <div class="settings-content">
+        <section class="settings-page" data-settings-page="devices">
+          <h3>Camera & audio</h3>
+          <label for="cameraSelect">Camera</label>
+          <select id="cameraSelect"></select>
+          <label for="resolutionSelect">Video quality</label>
+          <select id="resolutionSelect">
+            <option value="720">HD · 720p</option>
+            <option value="480">Standard · 480p</option>
+            <option value="360">Data saver · 360p</option>
+          </select>
+          <label for="microphoneSelect">Microphone</label>
+          <select id="microphoneSelect"></select>
+          <label for="speakerSelect">Speaker</label>
+          <select id="speakerSelect"></select>
+        </section>
+        <section class="settings-page hidden" data-settings-page="appearance">
+          <h3>Make it yours</h3>
+          <div class="theme-options">
+            <button class="theme-option active" data-theme="midnight" type="button"><i class="theme-midnight"></i><span>Midnight</span></button>
+            <button class="theme-option" data-theme="aurora" type="button"><i class="theme-aurora"></i><span>Aurora</span></button>
+            <button class="theme-option" data-theme="ember" type="button"><i class="theme-ember"></i><span>Ember</span></button>
+          </div>
+          <div class="setting-row">
+            <div><strong>Mirror my video</strong><small>Show your camera like a mirror</small></div>
+            <label class="switch"><input id="mirrorToggle" type="checkbox" checked><span></span></label>
+          </div>
+          <div class="setting-row">
+            <div><strong>Reduce motion</strong><small>Use gentler transitions</small></div>
+            <label class="switch"><input id="motionToggle" type="checkbox"><span></span></label>
+          </div>
+        </section>
+        <section class="settings-page hidden" data-settings-page="network">
+          <h3>Connection diagnostics</h3>
+          <div class="diagnostic-card"><span>Connection</span><strong id="diagnosticConnection">Checking…</strong></div>
+          <div class="diagnostic-grid">
+            <div><span>Latency</span><strong id="diagnosticLatency">—</strong></div>
+            <div><span>Downlink</span><strong id="diagnosticDownlink">—</strong></div>
+            <div><span>Peers</span><strong id="diagnosticPeers">0</strong></div>
+            <div><span>Protocol</span><strong>WebRTC</strong></div>
+          </div>
+          <button id="runDiagnosticButton" class="secondary-button" type="button">Run connection test</button>
+        </section>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="leaveDialog" class="confirm-dialog">
+    <div class="confirm-icon">♡</div>
+    <h2>Leaving already?</h2>
+    <p>Your family room will stay here whenever you’re ready to come back.</p>
+    <div class="confirm-actions">
+      <button id="cancelLeaveButton" class="secondary-button" type="button">Stay in call</button>
+      <button id="confirmLeaveButton" class="danger-button" type="button">Leave call</button>
+    </div>
+  </dialog>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
