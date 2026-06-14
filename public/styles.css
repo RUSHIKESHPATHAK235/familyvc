@@ -153,8 +153,31 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .quality-poor .signal-bars i { background: var(--danger); }
 .header-button { min-width: 44px; height: 35px; display: flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface-soft); cursor: pointer; }
 .header-button b { font-size: 11px; }
-.call-stage { position: relative; min-height: 0; display: grid; place-items: center; padding-bottom: 12px; }
-.video-grid { width: 100%; height: 100%; display: grid; gap: 10px; transition: grid-template .35s ease; }
+/* 1. Constrain the stage so it strictly bounds the grid */
+.call-stage { 
+  position: relative; 
+  height: 100%;       /* Added: Forces the stage to respect the screen size */
+  width: 100%;        /* Added: Prevents horizontal overflow */
+  min-height: 0; 
+  display: flex;      /* Changed from grid to flex for better bounding */
+  align-items: center; 
+  justify-content: center;
+  padding-bottom: 12px; 
+  overflow: hidden;   /* Added: Traps any runaway elements */
+}
+
+/* 2. Force the grid to fill the constrained stage */
+.video-grid { 
+  width: 100%; 
+  height: 100%;       /* Added: Makes the grid fill the stage */
+  max-height: 100%;   /* Added: Absolute cap on height */
+  display: grid; 
+  gap: 10px; 
+  transition: grid-template .35s ease; 
+}
+
+/* (Leave your existing .video-tile and video CSS as they are, 
+   object-fit: cover is already doing its job perfectly!) */
 .video-grid[data-count="1"] { grid-template-columns: 1fr; }
 .video-grid[data-count="2"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
 .video-grid[data-count="3"] { grid-template-columns: repeat(2, minmax(0,1fr)); }
